@@ -18,6 +18,7 @@ build
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+!.vscode/mcp.json
 .idea
 *.swp
 *.swo
