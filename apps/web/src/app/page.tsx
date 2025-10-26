@@ -1,46 +1,109 @@
 "use client";
-import { api } from "@Barnameh/backend/convex/_generated/api";
-import { useQuery } from "convex/react";
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
+import { AnomalyAlerts } from "@/components/anomaly-alerts";
+import { DemandForecastChart } from "@/components/demand-forecast-chart";
+import { KPIDashboard } from "@/components/kpi-dashboard";
+import { RecommendationsCard } from "@/components/recommendations-card";
+import { AIChat } from "@/components/ai-chat";
+import { ResourceUtilizationChart } from "@/components/resource-utilization-chart";
+import { AttendanceTrendsChart } from "@/components/attendance-trends-chart";
+import { ProductionRevenueChart } from "@/components/production-revenue-chart";
 
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
+// Demo organization and product IDs from the database seed data
+const DEMO_ORG_ID = "11111111-1111-1111-1111-111111111111";
+const DEMO_PRODUCT_ID = "PROD-A-001";
 
 export default function Home() {
-	const healthCheck = useQuery(api.healthCheck.get);
-
 	return (
-		<div className="container mx-auto max-w-3xl px-4 py-2">
-			<pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-			<div className="grid gap-6">
-				<section className="rounded-lg border p-4">
-					<h2 className="mb-2 font-medium">API Status</h2>
-					<div className="flex items-center gap-2">
-						<div
-							className={`h-2 w-2 rounded-full ${healthCheck === "OK" ? "bg-green-500" : healthCheck === undefined ? "bg-orange-400" : "bg-red-500"}`}
-						/>
-						<span className="text-muted-foreground text-sm">
-							{healthCheck === undefined
-								? "Checking..."
-								: healthCheck === "OK"
-									? "Connected"
-									: "Error"}
-						</span>
-					</div>
-				</section>
+		<div className="container mx-auto max-w-7xl space-y-8 py-8">
+			<div className="space-y-2 text-center">
+				<h1 className="font-bold text-3xl tracking-tight">
+					BarnamehAI
+				</h1>
+				<p className="text-muted-foreground">
+					Real-time predictions and insights for operational efficiency
+				</p>
 			</div>
+
+			{/* AI Recommendations - Top Priority */}
+			<RecommendationsCard
+				organizationId={DEMO_ORG_ID}
+				autoRefresh={true}
+				refreshInterval={60000}
+			/>
+
+			{/* KPI Dashboard */}
+			<KPIDashboard
+				organizationId={DEMO_ORG_ID}
+				autoRefresh
+				refreshInterval={30000}
+			/>
+
+			{/* Forecasts and Alerts Grid */}
+			<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+				{/* Demand Forecast */}
+				<DemandForecastChart
+					organizationId={DEMO_ORG_ID}
+					productId={DEMO_PRODUCT_ID}
+					productName="Product A"
+					days={30}
+					autoRefresh
+					refreshInterval={60000}
+				/>
+
+				{/* Anomaly Alerts */}
+				<AnomalyAlerts
+					organizationId={DEMO_ORG_ID}
+					autoRefresh
+					refreshInterval={30000}
+					maxAlerts={5}
+				/>
+			</div>
+
+			{/* Additional Forecast for Product B */}
+			<DemandForecastChart
+				organizationId={DEMO_ORG_ID}
+				productId="PROD-B-002"
+				productName="Product B"
+				days={30}
+				autoRefresh
+				refreshInterval={60000}
+			/>
+
+			{/* Analytics Section - New Charts */}
+			<div className="space-y-4">
+				<h2 className="text-2xl font-bold">Operational Analytics</h2>
+				
+				{/* Resource Utilization */}
+				<ResourceUtilizationChart
+					organizationId={DEMO_ORG_ID}
+					days={7}
+					autoRefresh
+					refreshInterval={60000}
+				/>
+
+				{/* Production & Attendance Grid */}
+				<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+					{/* Production & Revenue Trends */}
+					<ProductionRevenueChart
+						organizationId={DEMO_ORG_ID}
+						days={30}
+						autoRefresh
+						refreshInterval={60000}
+					/>
+
+					{/* Employee Attendance Trends */}
+					<AttendanceTrendsChart
+						organizationId={DEMO_ORG_ID}
+						days={30}
+						autoRefresh
+						refreshInterval={60000}
+					/>
+				</div>
+			</div>
+
+			{/* AI Chat Assistant */}
+			<AIChat organizationId={DEMO_ORG_ID} productId={DEMO_PRODUCT_ID} />
 		</div>
 	);
 }

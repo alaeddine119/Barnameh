@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "Barnameh",
-	description: "Barnameh",
+	title: "AI-Powered Operations Dashboard | Barnameh",
+	description: "Real-time AI predictions and insights for operational efficiency",
 };
 
 export default function RootLayout({

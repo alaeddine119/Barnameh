@@ -66,5 +66,17 @@
 		"formatter": {
 			"quoteStyle": "double"
 		}
-	}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["packages/backend/convex/_generated/**"],
+			"linter": { "enabled": false },
+			"formatter": { "enabled": false }
+		}
+	]
 }
