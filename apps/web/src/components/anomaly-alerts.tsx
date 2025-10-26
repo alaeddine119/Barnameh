@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type AnomalyPrediction, mlApiClient } from "@/lib/ml-api-client";
+import { useLanguage } from "@/contexts/language-context";
 
 interface AnomalyAlertsProps {
 	organizationId: string;
@@ -63,6 +64,7 @@ export function AnomalyAlerts({
 	refreshInterval = 30000, // 30 seconds
 	maxAlerts = 10,
 }: AnomalyAlertsProps) {
+	const { t } = useLanguage();
 	const [anomalies, setAnomalies] = useState<AnomalyPrediction[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -156,8 +158,8 @@ export function AnomalyAlerts({
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>Anomaly Alerts</CardTitle>
-					<CardDescription>Loading alerts...</CardDescription>
+					<CardTitle>{t.anomalyAlerts}</CardTitle>
+					<CardDescription>{t.loading}...</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<Skeleton className="h-[200px] w-full" />
@@ -170,8 +172,8 @@ export function AnomalyAlerts({
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>Anomaly Alerts</CardTitle>
-					<CardDescription>Error loading alerts</CardDescription>
+					<CardTitle>{t.anomalyAlerts}</CardTitle>
+					<CardDescription>{t.error}</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="flex items-center gap-2 text-destructive">
@@ -190,7 +192,7 @@ export function AnomalyAlerts({
 					<div>
 						<CardTitle className="flex items-center gap-2">
 							<AlertTriangle className="h-5 w-5" />
-							Anomaly Alerts
+							{t.anomalyAlerts}
 						</CardTitle>
 						<CardDescription>
 							Predicted operational issues •{" "}
@@ -199,15 +201,15 @@ export function AnomalyAlerts({
 					</div>
 					<div className="flex items-center gap-2">
 						{criticalCount > 0 && (
-							<Badge variant="destructive">{criticalCount} Critical</Badge>
+							<Badge variant="destructive">{criticalCount} {t.critical}</Badge>
 						)}
-						{highCount > 0 && <Badge variant="default">{highCount} High</Badge>}
+						{highCount > 0 && <Badge variant="default">{highCount} {t.high}</Badge>}
 					</div>
 				</div>
 				{lastUpdated && (
 					<div className="flex items-center gap-1 text-muted-foreground text-xs">
 						<Clock className="h-3 w-3" />
-						Updated: {lastUpdated.toLocaleTimeString()}
+						{t.updated}: {lastUpdated.toLocaleTimeString()}
 					</div>
 				)}
 			</CardHeader>
@@ -215,10 +217,7 @@ export function AnomalyAlerts({
 				{anomalies.length === 0 ? (
 					<div className="flex flex-col items-center justify-center py-8 text-center">
 						<CheckCircle className="mb-2 h-12 w-12 text-green-500" />
-						<p className="font-semibold">No Anomalies Detected</p>
-						<p className="text-muted-foreground text-sm">
-							All systems operating normally
-						</p>
+						<p className="font-semibold">{t.noAnomalies}</p>
 					</div>
 				) : (
 					<div className="space-y-3">
@@ -244,28 +243,31 @@ export function AnomalyAlerts({
 														variant={config.badgeVariant}
 														className="uppercase"
 													>
-														{anomaly.severity}
+														{anomaly.severity === 'critical' ? t.critical :
+														 anomaly.severity === 'high' ? t.high :
+														 anomaly.severity === 'medium' ? t.medium :
+														 anomaly.severity === 'low' ? t.low : anomaly.severity}
 													</Badge>
 													<Badge variant="outline">
-														{anomaly.anomaly_type}
+														{anomaly.anomaly_type === 'performance_degradation' ? t.performanceDegradation : anomaly.anomaly_type}
 													</Badge>
 													<div className="flex items-center gap-1 text-muted-foreground text-xs">
 														<Clock className="h-3 w-3" />
-														{getTimeUntil(anomaly.predicted_time)}
+														{t.in} {getTimeUntil(anomaly.predicted_time)}
 													</div>
 												</div>
 												<p className="font-semibold">
 													{anomaly.anomaly_type === "bottleneck" &&
-														"Resource Bottleneck Predicted"}
+														t.resourceBottleneckPredicted}
 													{anomaly.anomaly_type === "failure" &&
-														"System Failure Risk"}
+														t.systemFailureRisk}
 													{anomaly.anomaly_type === "performance_degradation" &&
-														"Performance Degradation Detected"}
+														t.performanceDegradationDetected}
 													{anomaly.anomaly_type === "unknown" &&
 														"Operational Issue Detected"}
 												</p>
 												<p className="text-muted-foreground text-sm">
-													Probability: {Math.round(anomaly.probability * 100)}%
+													{t.probability}: {Math.round(anomaly.probability * 100)}%
 													•{" "}
 													{new Date(anomaly.predicted_time).toLocaleDateString(
 														"en-US",

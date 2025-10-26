@@ -50,6 +50,7 @@ export interface RecommendationRequest {
 	organization_id: string;
 	question?: string;
 	product_id?: string;
+	language?: 'en' | 'it';
 }
 
 export interface RecommendationResponse {
@@ -295,6 +296,22 @@ class MLAPIClient {
 	async getRecommendations(request: RecommendationRequest): Promise<RecommendationResponse> {
 		if (USE_MOCK_DATA) {
 			await new Promise((resolve) => setTimeout(resolve, 600));
+			
+			// Return Italian mock data if language is Italian
+			if (request.language === 'it') {
+				return {
+					summary: 'Riallocare le risorse e aumentare il personale per soddisfare la domanda di picco',
+					priority: 'high',
+					actions: [
+						'Spostare il 10% del carico di lavoro da Machine-001 a Machine-003',
+						'Aggiungere 2 membri temporanei del personale a Worker-Pool-A per i prossimi 7 giorni',
+						'Programmare la manutenzione preventiva per la linea di produzione B questo fine settimana'
+					],
+					rationale: 'La previsione indica una domanda di picco e un elevato utilizzo di Machine-001; la riallocazione riduce i colli di bottiglia.',
+					estimated_impact: 'Aumento stimato dell\'8% nell\'adempimento e $40k di risparmio sui costi nel corso del mese'
+				} as RecommendationResponse;
+			}
+			
 			return {
 				summary: 'Reallocate resources and increase staffing to meet peak demand',
 				priority: 'high',
@@ -322,6 +339,22 @@ class MLAPIClient {
 			return await response.json();
 		} catch (err) {
 			console.warn('Recommendations API unavailable, using mock fallback', err);
+			
+			// Return Italian mock data if language is Italian
+			if (request.language === 'it') {
+				return {
+					summary: 'Riallocare le risorse e aumentare il personale per soddisfare la domanda di picco',
+					priority: 'high',
+					actions: [
+						'Spostare il 10% del carico di lavoro da Machine-001 a Machine-003',
+						'Aggiungere 2 membri temporanei del personale a Worker-Pool-A per i prossimi 7 giorni',
+						'Programmare la manutenzione preventiva per la linea di produzione B questo fine settimana'
+					],
+					rationale: 'La previsione indica una domanda di picco e un elevato utilizzo di Machine-001; la riallocazione riduce i colli di bottiglia.',
+					estimated_impact: 'Aumento stimato dell\'8% nell\'adempimento e $40k di risparmio sui costi nel corso del mese'
+				} as RecommendationResponse;
+			}
+			
 			return {
 				summary: 'Reallocate resources and increase staffing to meet peak demand',
 				priority: 'high',

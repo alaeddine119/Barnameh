@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type KPISummary, mlApiClient } from "@/lib/ml-api-client";
+import { useLanguage } from "@/contexts/language-context";
 
 interface KPIDashboardProps {
 	organizationId: string;
@@ -41,6 +42,7 @@ export function KPIDashboard({
 	autoRefresh = true,
 	refreshInterval = 30000, // 30 seconds
 }: KPIDashboardProps) {
+	const { t } = useLanguage();
 	const [kpiData, setKpiData] = useState<KPISummary | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -76,8 +78,8 @@ export function KPIDashboard({
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>Key Performance Indicators</CardTitle>
-					<CardDescription>Loading metrics...</CardDescription>
+					<CardTitle>{t.totalProduction}</CardTitle>
+					<CardDescription>{t.loading}...</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -96,8 +98,8 @@ export function KPIDashboard({
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>Key Performance Indicators</CardTitle>
-					<CardDescription>Error loading metrics</CardDescription>
+					<CardTitle>{t.totalProduction}</CardTitle>
+					<CardDescription>{t.error}</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="flex items-center gap-2 text-destructive">
@@ -115,7 +117,7 @@ export function KPIDashboard({
 
 	const kpiCards: KPICardData[] = [
 		{
-			title: "Total Production",
+			title: t.totalProduction,
 			value: kpiData.total_production.toLocaleString(),
 			change: 5.2,
 			changeLabel: "vs last period",
@@ -124,7 +126,7 @@ export function KPIDashboard({
 			bgColor: "bg-blue-500/10",
 		},
 		{
-			title: "Resource Utilization",
+			title: t.resourceUtilization,
 			value: `${Math.round(kpiData.avg_utilization)}%`,
 			change: kpiData.avg_utilization > 80 ? 3.1 : -2.4,
 			changeLabel: "efficiency",
@@ -133,7 +135,7 @@ export function KPIDashboard({
 			bgColor: "bg-green-500/10",
 		},
 		{
-			title: "Total Downtime",
+			title: `${t.downtime}`,
 			value: `${Math.round(kpiData.total_downtime)}h`,
 			change: -12.5,
 			changeLabel: "improvement",
@@ -142,7 +144,7 @@ export function KPIDashboard({
 			bgColor: "bg-orange-500/10",
 		},
 		{
-			title: "Avg. Attendance",
+			title: t.attendanceRate,
 			value: `${Math.round(kpiData.avg_attendance)}%`,
 			change: 1.8,
 			changeLabel: "this week",
@@ -159,23 +161,23 @@ export function KPIDashboard({
 					<div>
 						<CardTitle className="flex items-center gap-2">
 							<Activity className="h-5 w-5" />
-							Key Performance Indicators
+							{t.keyPerformanceIndicators}
 						</CardTitle>
 						<CardDescription>
-							Last {kpiData.period_days} days • Real-time metrics
+							{t.last} {kpiData.period_days} {t.days} • {t.realTimeMetrics}
 						</CardDescription>
 					</div>
 					{lastUpdated && (
 						<div className="text-right">
 							<div className="text-muted-foreground text-xs">
-								Updated: {lastUpdated.toLocaleTimeString()}
+								{t.updated}: {lastUpdated.toLocaleTimeString()}
 							</div>
 							<div className="mt-1 flex items-center justify-end gap-1 text-green-500 text-xs">
 								<span className="relative flex h-2 w-2">
 									<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
 									<span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
 								</span>
-								Live
+								{t.live}
 							</div>
 						</div>
 					)}
@@ -254,9 +256,9 @@ export function KPIDashboard({
 					<div className="grid grid-cols-2 gap-4 text-center md:grid-cols-4">
 						<div>
 							<p className="font-bold text-2xl text-green-500">
-								{kpiData.avg_utilization > 80 ? "Optimal" : "Good"}
+								{kpiData.avg_utilization > 80 ? t.optimal : "Good"}
 							</p>
-							<p className="text-muted-foreground text-xs">Overall Status</p>
+							<p className="text-muted-foreground text-xs">{t.overallStatus}</p>
 						</div>
 						<div>
 							<p className="font-bold text-2xl">
@@ -264,7 +266,7 @@ export function KPIDashboard({
 									(kpiData.total_production / kpiData.period_days) * 100,
 								) / 100}
 							</p>
-							<p className="text-muted-foreground text-xs">Avg Daily Output</p>
+							<p className="text-muted-foreground text-xs">{t.avgDailyOutput}</p>
 						</div>
 						<div>
 							<p className="font-bold text-2xl">
@@ -274,12 +276,12 @@ export function KPIDashboard({
 								h
 							</p>
 							<p className="text-muted-foreground text-xs">
-								Avg Daily Downtime
+								{t.avgDailyDowntime}
 							</p>
 						</div>
 						<div>
 							<p className="font-bold text-2xl">{kpiData.period_days}</p>
-							<p className="text-muted-foreground text-xs">Days Analyzed</p>
+							<p className="text-muted-foreground text-xs">{t.daysAnalyzed}</p>
 						</div>
 					</div>
 				</div>

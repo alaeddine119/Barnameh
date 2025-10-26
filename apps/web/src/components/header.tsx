@@ -1,9 +1,12 @@
 "use client";
 import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
+import { LanguageToggle } from "./language-toggle";
+import { useLanguage } from "@/contexts/language-context";
 
 export default function Header() {
-	const links = [{ to: "/", label: "Dashboard" }] as const;
+	const { t } = useLanguage();
+	const links = [{ to: "/", label: t.dashboard }] as const;
 
 	return (
 		<div>
@@ -18,6 +21,7 @@ export default function Header() {
 					})}
 				</nav>
 				<div className="flex items-center gap-2">
+					<LanguageToggle />
 					<ModeToggle />
 				</div>
 			</div>

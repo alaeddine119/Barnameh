@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { mlApiClient } from "@/lib/ml-api-client";
 import type { AttendanceTrend } from "@/lib/ml-api-client";
+import { useLanguage } from "@/contexts/language-context";
 
 interface AttendanceTrendsChartProps {
 	organizationId: string;
@@ -18,6 +19,7 @@ export function AttendanceTrendsChart({
 	autoRefresh = false,
 	refreshInterval = 60000,
 }: AttendanceTrendsChartProps) {
+	const { t } = useLanguage();
 	const [trends, setTrends] = useState<AttendanceTrend[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -59,10 +61,7 @@ export function AttendanceTrendsChart({
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Employee Attendance Trends</CardTitle>
-				<CardDescription>
-					Daily attendance rate over last {days} days
-				</CardDescription>
+				<CardTitle>{t.attendanceTrends}</CardTitle>
 			</CardHeader>
 			<CardContent>
 				{loading ? (
@@ -75,7 +74,7 @@ export function AttendanceTrendsChart({
 					</div>
 				) : trends.length === 0 ? (
 					<div className="py-8 text-center text-muted-foreground">
-						No attendance data available
+						{t.noAttendanceData}
 					</div>
 				) : (
 					<div className="space-y-4">
@@ -85,19 +84,19 @@ export function AttendanceTrendsChart({
 								<div className="text-2xl font-bold">
 									{avgAttendanceRate.toFixed(1)}%
 								</div>
-								<div className="text-xs text-muted-foreground">Avg Rate</div>
+								<div className="text-xs text-muted-foreground">{t.avgAttendance}</div>
 							</div>
 							<div className="text-center">
 								<div className="text-2xl font-bold text-green-600">
 									{trends[trends.length - 1]?.present_count || 0}
 								</div>
-								<div className="text-xs text-muted-foreground">Present Today</div>
+								<div className="text-xs text-muted-foreground">{t.presentToday}</div>
 							</div>
 							<div className="text-center">
 								<div className="text-2xl font-bold text-red-600">
 									{trends[trends.length - 1]?.absent_count || 0}
 								</div>
-								<div className="text-xs text-muted-foreground">Absent Today</div>
+								<div className="text-xs text-muted-foreground">{t.absentToday}</div>
 							</div>
 						</div>
 

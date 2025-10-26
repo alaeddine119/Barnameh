@@ -6,6 +6,7 @@ import type { RecommendationResponse } from "@/lib/ml-api-client";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useLanguage } from "@/contexts/language-context";
 
 interface Message {
 	id: string;
@@ -21,12 +22,12 @@ interface Props {
 }
 
 export function AIChat({ organizationId, productId, defaultOpen = false }: Props) {
+	const { t } = useLanguage();
 	const [messages, setMessages] = useState<Message[]>([
 		{
 			id: "welcome",
 			role: "assistant",
-			content:
-				"Hi! I'm your AI operations assistant. Ask me anything about optimizing your operations, understanding forecasts, or improving efficiency.",
+			content: t.aiChatAssistant,
 			timestamp: new Date(),
 		},
 	]);
@@ -169,7 +170,7 @@ export function AIChat({ organizationId, productId, defaultOpen = false }: Props
 				<div className="flex items-center justify-between p-4 border-b">
 					<div className="flex items-center gap-2">
 						<div className="h-3 w-3 rounded-full bg-green-500 animate-pulse" />
-						<h3 className="font-semibold">AI Assistant</h3>
+						<h3 className="font-semibold">{t.aiChatAssistant}</h3>
 					</div>
 					<Button
 						variant="ghost"
@@ -247,7 +248,7 @@ export function AIChat({ organizationId, productId, defaultOpen = false }: Props
 						<Input
 							value={input}
 							onChange={(e) => setInput(e.target.value)}
-							placeholder="Ask about operations..."
+							placeholder={t.askQuestion}
 							disabled={loading}
 							className="flex-1"
 						/>

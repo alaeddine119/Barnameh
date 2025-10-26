@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { mlApiClient } from "@/lib/ml-api-client";
 import type { ProductionRevenueTrend } from "@/lib/ml-api-client";
+import { useLanguage } from "@/contexts/language-context";
 
 interface ProductionRevenueChartProps {
 	organizationId: string;
@@ -18,6 +19,7 @@ export function ProductionRevenueChart({
 	autoRefresh = false,
 	refreshInterval = 60000,
 }: ProductionRevenueChartProps) {
+	const { t } = useLanguage();
 	const [trends, setTrends] = useState<ProductionRevenueTrend[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -65,10 +67,7 @@ export function ProductionRevenueChart({
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Production & Revenue Trends</CardTitle>
-				<CardDescription>
-					Daily production, revenue, and downtime over last {days} days
-				</CardDescription>
+				<CardTitle>{t.productionRevenueTrends}</CardTitle>
 			</CardHeader>
 			<CardContent>
 				{loading ? (
@@ -81,7 +80,7 @@ export function ProductionRevenueChart({
 					</div>
 				) : trends.length === 0 ? (
 					<div className="py-8 text-center text-muted-foreground">
-						No production data available
+						{t.noProductionData}
 					</div>
 				) : (
 					<div className="space-y-4">
@@ -91,19 +90,19 @@ export function ProductionRevenueChart({
 								<div className="text-2xl font-bold">
 									{totalProduction.toFixed(0)}
 								</div>
-								<div className="text-xs text-muted-foreground">Total Units</div>
+								<div className="text-xs text-muted-foreground">{t.totalProduced}</div>
 							</div>
 							<div className="text-center">
 								<div className="text-2xl font-bold text-green-600">
 									${(totalRevenue / 1000).toFixed(1)}K
 								</div>
-								<div className="text-xs text-muted-foreground">Total Revenue</div>
+								<div className="text-xs text-muted-foreground">{t.totalRevenue}</div>
 							</div>
 							<div className="text-center">
 								<div className="text-2xl font-bold text-red-600">
 									{totalDowntime.toFixed(0)}m
 								</div>
-								<div className="text-xs text-muted-foreground">Total Downtime</div>
+								<div className="text-xs text-muted-foreground">{t.downtime}</div>
 							</div>
 						</div>
 
@@ -113,7 +112,7 @@ export function ProductionRevenueChart({
 							<div>
 								<div className="mb-2 flex items-center gap-2 text-sm font-medium">
 									<div className="h-3 w-3 rounded bg-blue-500" />
-									<span>Production Volume</span>
+									<span>{t.production}</span>
 								</div>
 								<div className="relative h-64 w-full border-b border-l border-muted">
 									{/* Grid lines for reference */}
@@ -160,7 +159,7 @@ export function ProductionRevenueChart({
 							<div>
 								<div className="mb-2 flex items-center gap-2 text-sm font-medium">
 									<div className="h-3 w-3 rounded bg-green-500" />
-									<span>Revenue</span>
+									<span>{t.revenue}</span>
 								</div>
 								<div className="relative h-64 w-full border-b border-l border-muted">
 									{revenueRange > 0 ? (

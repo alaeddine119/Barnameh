@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type DemandForecast, mlApiClient } from "@/lib/ml-api-client";
+import { useLanguage } from "@/contexts/language-context";
 
 // Dynamically import Recharts to avoid SSR issues
 const Line = dynamic(() => import("recharts").then((mod) => mod.Line), {
@@ -62,6 +63,7 @@ export function DemandForecastChart({
 	autoRefresh = false,
 	refreshInterval = 60000, // 1 minute
 }: DemandForecastChartProps) {
+	const { t } = useLanguage();
 	const [forecast, setForecast] = useState<DemandForecast[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -128,8 +130,8 @@ export function DemandForecastChart({
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>Demand Forecast</CardTitle>
-					<CardDescription>Loading forecast data...</CardDescription>
+					<CardTitle>{t.demandForecast}</CardTitle>
+					<CardDescription>{t.loading}...</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<Skeleton className="h-[300px] w-full" />
@@ -142,8 +144,8 @@ export function DemandForecastChart({
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>Demand Forecast</CardTitle>
-					<CardDescription>Error loading forecast</CardDescription>
+					<CardTitle>{t.demandForecast}</CardTitle>
+					<CardDescription>{t.error}</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="flex items-center gap-2 text-destructive">
@@ -162,7 +164,7 @@ export function DemandForecastChart({
 					<div>
 						<CardTitle className="flex items-center gap-2">
 							<TrendingUp className="h-5 w-5" />
-							{days}-Day Demand Forecast
+							{t.demandForecast}
 						</CardTitle>
 						<CardDescription>
 							{productName} •{" "}
@@ -172,11 +174,11 @@ export function DemandForecastChart({
 					<div className="text-right">
 						<div className="font-bold text-2xl">{avgPrediction}</div>
 						<div className="text-muted-foreground text-xs">
-							Avg. Daily Demand
+							{t.avgDailyDemand}
 						</div>
 						{lastUpdated && (
 							<div className="mt-1 text-muted-foreground text-xs">
-								Updated: {lastUpdated.toLocaleTimeString()}
+								{t.updated}: {lastUpdated.toLocaleTimeString()}
 							</div>
 						)}
 					</div>
@@ -270,7 +272,7 @@ export function DemandForecastChart({
 									stroke="hsl(var(--primary))"
 									strokeWidth={3}
 									dot={{ r: 3 }}
-									name="Predicted Demand"
+									name={t.predictedDemand}
 								/>
 							</ComposedChart>
 						</ResponsiveContainer>
@@ -279,11 +281,10 @@ export function DemandForecastChart({
 					{/* Legend explanation */}
 					<div className="space-y-1 text-muted-foreground text-xs">
 						<p>
-							<span className="font-semibold">Shaded area:</span> 95% confidence
-							interval
+							<span className="font-semibold">{t.shadedArea}:</span> {t.confidenceInterval}
 						</p>
 						<p>
-							<span className="font-semibold">Blue line:</span> Predicted demand
+							<span className="font-semibold">{t.blueLine}:</span> {t.predictedDemand}
 						</p>
 					</div>
 				</div>

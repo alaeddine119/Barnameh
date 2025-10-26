@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { mlApiClient } from "@/lib/ml-api-client";
 import type { RecommendationResponse } from "@/lib/ml-api-client";
 import { Badge } from "./ui/badge";
+import { useLanguage } from "@/contexts/language-context";
 
 interface Props {
     organizationId: string;
@@ -18,6 +19,7 @@ export function RecommendationsCard({
     autoRefresh = false,
     refreshInterval = 60000,
 }: Props) {
+    const { t, language } = useLanguage();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [rec, setRec] = useState<RecommendationResponse | null>(null);
@@ -30,6 +32,7 @@ export function RecommendationsCard({
                 organization_id: organizationId,
                 product_id: productId,
                 question: "How do I optimize operations for the next month?",
+                language: language,
             });
             setRec(r);
         } catch (err: any) {
@@ -44,7 +47,7 @@ export function RecommendationsCard({
         if (!autoRefresh) return;
         const id = setInterval(fetchRec, refreshInterval);
         return () => clearInterval(id);
-    }, [organizationId, productId]);
+    }, [organizationId, productId, language]);
 
     return (
         <div className="rounded-lg border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-6 shadow-lg">
@@ -66,8 +69,8 @@ export function RecommendationsCard({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold">AI Recommendations</h3>
-                        <p className="text-sm text-muted-foreground">
+                        <h3 className="font-bold text-xl">{t.aiRecommendations}</h3>
+                        <p className="text-muted-foreground text-sm">
                             Powered by Llama 3.3
                         </p>
                     </div>
@@ -81,9 +84,9 @@ export function RecommendationsCard({
                                   ? "secondary"
                                   : "default"
                         }
-                        className="text-sm px-3 py-1"
+                        className="px-3 py-1 text-sm"
                     >
-                        {rec.priority.toUpperCase()} PRIORITY
+                        {rec.priority.toUpperCase() === 'HIGH' ? t.highPriority : `${rec.priority.toUpperCase()} PRIORITY`}
                     </Badge>
                 )}
             </div>
@@ -91,30 +94,30 @@ export function RecommendationsCard({
             {loading ? (
                 <div className="flex items-center gap-3 rounded-md bg-muted/50 p-6">
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                    <span className="text-sm text-muted-foreground">
-                        Analyzing your operations with AI...
+                    <span className="text-muted-foreground text-sm">
+                        {t.loading}...
                     </span>
                 </div>
             ) : error ? (
                 <div className="rounded-md border border-destructive/20 bg-destructive/10 p-4">
-                    <p className="text-sm text-destructive">{error}</p>
+                    <p className="text-destructive text-sm">{error}</p>
                 </div>
             ) : rec ? (
                 <div className="space-y-4">
                     {/* Summary */}
                     <div className="rounded-md border bg-card p-4">
-                        <h4 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                            Executive Summary
+                        <h4 className="mb-2 font-semibold text-muted-foreground text-sm uppercase tracking-wide">
+                            {t.recommendations}
                         </h4>
-                        <p className="text-base font-medium leading-relaxed">
+                        <p className="font-medium text-base leading-relaxed">
                             {rec.summary}
                         </p>
                     </div>
 
                     {/* Actions */}
                     <div className="rounded-md border bg-card p-4">
-                        <h4 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                            Recommended Actions
+                        <h4 className="mb-3 font-semibold text-muted-foreground text-sm uppercase tracking-wide">
+                            {t.recommendations}
                         </h4>
                         <ol className="space-y-2">
                             {rec.actions.map((a, i) => (
@@ -122,7 +125,7 @@ export function RecommendationsCard({
                                     key={`${i}-${a.slice(0, 20)}`}
                                     className="flex gap-3"
                                 >
-                                    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                                    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
                                         {i + 1}
                                     </span>
                                     <span className="flex-1 text-sm leading-relaxed">
@@ -137,20 +140,20 @@ export function RecommendationsCard({
                     <div className="grid gap-4 md:grid-cols-2">
                         {/* Rationale */}
                         <div className="rounded-md border bg-card p-4">
-                            <h4 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                                Why This Matters
+                            <h4 className="mb-2 font-semibold text-muted-foreground text-sm uppercase tracking-wide">
+                                {t.whyThisMatters}
                             </h4>
-                            <p className="text-sm leading-relaxed text-muted-foreground">
+                            <p className="text-muted-foreground text-sm leading-relaxed">
                                 {rec.rationale}
                             </p>
                         </div>
 
                         {/* Impact */}
                         <div className="rounded-md border bg-card p-4">
-                            <h4 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                                Expected Impact
+                            <h4 className="mb-2 font-semibold text-muted-foreground text-sm uppercase tracking-wide">
+                                {t.expectedImpact}
                             </h4>
-                            <p className="text-sm leading-relaxed text-muted-foreground">
+                            <p className="text-muted-foreground text-sm leading-relaxed">
                                 {rec.estimated_impact}
                             </p>
                         </div>
@@ -158,8 +161,8 @@ export function RecommendationsCard({
                 </div>
             ) : (
                 <div className="rounded-md bg-muted/50 p-6 text-center">
-                    <p className="text-sm text-muted-foreground">
-                        No recommendations available at this time.
+                    <p className="text-muted-foreground text-sm">
+                        {t.noRecommendations}
                     </p>
                 </div>
             )}

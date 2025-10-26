@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { mlApiClient } from "@/lib/ml-api-client";
 import type { ResourceUtilization } from "@/lib/ml-api-client";
+import { useLanguage } from "@/contexts/language-context";
 
 interface ResourceUtilizationChartProps {
 	organizationId: string;
@@ -18,6 +19,7 @@ export function ResourceUtilizationChart({
 	autoRefresh = false,
 	refreshInterval = 60000,
 }: ResourceUtilizationChartProps) {
+	const { t } = useLanguage();
 	const [resources, setResources] = useState<ResourceUtilization[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -50,10 +52,7 @@ export function ResourceUtilizationChart({
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Resource Utilization</CardTitle>
-				<CardDescription>
-					Average utilization and efficiency over last {days} days
-				</CardDescription>
+				<CardTitle>{t.resourceUtilization7Days}</CardTitle>
 			</CardHeader>
 			<CardContent>
 				{loading ? (
@@ -66,7 +65,7 @@ export function ResourceUtilizationChart({
 					</div>
 				) : resources.length === 0 ? (
 					<div className="py-8 text-center text-muted-foreground">
-						No resource data available
+						{t.noResourceData}
 					</div>
 				) : (
 					<div className="space-y-4">
@@ -82,7 +81,7 @@ export function ResourceUtilizationChart({
 											{resource.avg_utilization.toFixed(1)}%
 										</div>
 										<div className="text-xs text-muted-foreground">
-											{resource.avg_efficiency.toFixed(1)}% efficiency
+											{resource.avg_efficiency.toFixed(1)}% {t.efficiency}
 										</div>
 									</div>
 								</div>
@@ -103,8 +102,8 @@ export function ResourceUtilizationChart({
 
 								{/* Metrics */}
 								<div className="flex gap-4 text-xs text-muted-foreground">
-									<span>Downtime: {resource.total_downtime}min</span>
-									<span>Errors: {resource.total_errors}</span>
+									<span>{t.downtime}: {resource.total_downtime}{t.minutes}</span>
+									<span>{t.error}: {resource.total_errors}</span>
 								</div>
 							</div>
 						))}

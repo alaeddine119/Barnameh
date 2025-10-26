@@ -8,20 +8,23 @@ import { AIChat } from "@/components/ai-chat";
 import { ResourceUtilizationChart } from "@/components/resource-utilization-chart";
 import { AttendanceTrendsChart } from "@/components/attendance-trends-chart";
 import { ProductionRevenueChart } from "@/components/production-revenue-chart";
+import { useLanguage } from "@/contexts/language-context";
 
 // Demo organization and product IDs from the database seed data
 const DEMO_ORG_ID = "11111111-1111-1111-1111-111111111111";
 const DEMO_PRODUCT_ID = "PROD-A-001";
 
 export default function Home() {
+	const { t } = useLanguage();
+	
 	return (
 		<div className="container mx-auto max-w-7xl space-y-8 py-8">
 			<div className="space-y-2 text-center">
 				<h1 className="font-bold text-3xl tracking-tight">
-					BarnamehAI
+					{t.title}
 				</h1>
 				<p className="text-muted-foreground">
-					Real-time predictions and insights for operational efficiency
+					{t.subtitle}
 				</p>
 			</div>
 
@@ -72,7 +75,7 @@ export default function Home() {
 
 			{/* Analytics Section - New Charts */}
 			<div className="space-y-4">
-				<h2 className="text-2xl font-bold">Operational Analytics</h2>
+				<h2 className="text-2xl font-bold">{t.operationalAnalytics}</h2>
 				
 				{/* Resource Utilization */}
 				<ResourceUtilizationChart
